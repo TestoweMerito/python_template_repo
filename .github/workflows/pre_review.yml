@@ -1,11 +1,13 @@
 name: Python CI
 
+steps:
+name: CI
+
 on:
   push:
-    branches: [ develop ]
+    branches: [ $default-branch, main, master, develop ]
   pull_request:
-    branches: [ main ]
-  workflow_dispatch:
+    branches: [ $default-branch, main, master, develop ]
 
 jobs:
   build:
@@ -14,15 +16,6 @@ jobs:
     strategy:
       matrix:
         python-version: [3.11]
-
-    steps:
-    name: CI
-
-    on:
-      push:
-        branches: [ $default-branch, main, master, develop ]
-      pull_request:
-        branches: [ $default-branch, main, master, develop ]
 
     permissions:
       contents: read
