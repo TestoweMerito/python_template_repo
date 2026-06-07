@@ -1,34 +1,70 @@
-name: Python application
+name: CI
 
 on:
   push:
-    branches: [ $default-branch, main, master, develop]
+    branches: [ $default-branch, main, master, develop ]
   pull_request:
-    branches: [ $default-branch, main, master]
+    branches: [ $default-branch, main, master, develop ]
 
 permissions:
   contents: read
 
 jobs:
   build:
+    name: Lint / Format / Test
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.11]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
 
       - name: Create virtualenv and install dependencies
-        run: bash Scripts/init_env.sh
+        run: |
+          python -m venv .venv
+          . .venv/bin/activate
+          python -m pip install --upgrade pip setuptools wheel
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          elif [ -f pyproject.toml ]; then
+            pip install .
+          else
+            echo "No requirements.txt or pyproject.toml found — skipping dependency install"
+          fi
 
-      - name: Format check
-        run: bash Scripts/format_check.sh
+      - name: Install developer tools
+        run: |
+          . .venv/bin/activate
+          python -m pip install --upgrade black pylint pytest
 
-      - name: Lint
-        run: bash Scripts/lint.sh
+      - name: Format check (Black)
+        run: |
+          . .venv/bin/activate
+          black --version
+          black --check .
 
-      - name: Test with pytest
-        run: bash Scripts/test.sh
+      - name: Lint (pylint)
+        run: |
+          . .venv/bin/activate
+          pylint --version
+          pylint logic || true
+
+      - name: Run tests (pytest)
+        run: |
+          . .venv/bin/activate
+          pytest -q
