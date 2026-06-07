@@ -1,5 +1,3 @@
-def test_area():
-def test_perimeter():
 # tests/test_rectangle.py
 import pytest
 from logic.rectangle import area, perimeter
