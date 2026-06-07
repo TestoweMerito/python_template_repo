@@ -1,0 +1,4 @@
+# requirements.txt — minimalny
+black
+pylint
+pytest
