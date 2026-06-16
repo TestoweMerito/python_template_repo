@@ -27,12 +27,12 @@ jobs:
 
     - name: Lint with flake8
       run: |
-        # Sprawdzamy tylko folder z Twoim kodem
-        flake8 python_template_repo/ --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 python_template_repo/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        # Usunęliśmy ukośnik z końca nazwy folderu
+        flake8 python_template_repo --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 python_template_repo --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
     - name: Run tests with pytest
       run: |
-        # Uruchamiamy pytest wskazując na folder z testami
-        pytest python_template_repo/tests/
+        # Tutaj też bez ukośnika na końcu
+        pytest python_template_repo/tests
         
