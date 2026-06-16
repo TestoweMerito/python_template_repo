@@ -23,16 +23,13 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install flake8 pytest
-        if [ -f python_template_repo/requirements.txt ]; then pip install -r python_template_repo/requirements.txt; fi
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
     - name: Lint with flake8
       run: |
-        # Usunęliśmy ukośnik z końca nazwy folderu
-        flake8 python_template_repo --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 python_template_repo --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
     - name: Run tests with pytest
       run: |
-        # Tutaj też bez ukośnika na końcu
-        pytest python_template_repo/tests
-        
+        pytest
